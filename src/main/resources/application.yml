@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: "Hubble Data Source Manager"
+  profiles:
+    active: development
+
+server:
+    port: 9000
+
+---
+
+spring:
+  profiles: development
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hubble
+    username: hubble
+    password: hubble
+    driver-class-name: org.postgresql.Driver
+
+---
+
+spring:
+  profiles: production
+
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
