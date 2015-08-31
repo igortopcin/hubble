@@ -7,6 +7,10 @@ spring:
 server:
     port: 9000
 
+xnat:
+  url: http://mig.ime.usp.br/xnat
+  timeoutInMillis: 1000
+
 ---
 
 spring:
@@ -17,7 +21,7 @@ spring:
     username: hubble
     password: hubble
     driver-class-name: org.postgresql.Driver
-
+    
 ---
 
 spring:

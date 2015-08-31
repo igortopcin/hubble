@@ -31,4 +31,4 @@ node_modules
 # Eclipse
 .classpath
 .project
-
+.settings
