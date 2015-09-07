@@ -22,6 +22,9 @@ spring:
     password: hubble
     driver-class-name: org.postgresql.Driver
     
+  thymeleaf:
+    cache: false
+
 ---
 
 spring:

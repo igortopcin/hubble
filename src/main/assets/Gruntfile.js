@@ -62,7 +62,7 @@ module.exports = function(grunt) {
 				expand : true,
 				flatten : true,
 				cwd : 'bower_components',
-				src : [ '**/bootstrap.min.js', '**/requirejs.js' ],
+				src : [ '**/bootstrap.min.js', '**/require.js' ],
 				dest : '../resources/static/js/lib'
 			},
 			jquery : {

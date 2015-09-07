@@ -36,7 +36,7 @@ compiles to CSS, for its styling. LESS files are kept in `src/main/assets/less`.
 
 Use grunt to recompile the LESS in into CSS (from the `src/main/assets` directory):
 
-    grunt style
+    grunt
 
 
 # Grunt watch

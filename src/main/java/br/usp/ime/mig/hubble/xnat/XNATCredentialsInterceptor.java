@@ -22,8 +22,16 @@ public class XNATCredentialsInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		credentials.setUser(request.getParameter("xnat_user"));
-		credentials.setPassword(request.getParameter("xnat_password"));
+		String user = request.getParameter("xnat_user");
+		String password = request.getParameter("xnat_password");
+
+		if (user == null && credentials.getUser() == null && !request.getRequestURI().endsWith("logged-out")) {
+			response.sendRedirect("/logged-out");
+			return false;
+		} else if (user != null) {
+			credentials.setUser(user);
+			credentials.setPassword(password);
+		}
 
 		return true;
 	}

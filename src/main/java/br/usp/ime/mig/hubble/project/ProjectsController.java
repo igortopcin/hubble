@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/projects")
 public class ProjectsController {
 
 	private final Projects projects;
@@ -15,7 +16,7 @@ public class ProjectsController {
 		this.projects = projects;
 	}
 
-	@RequestMapping("/")
+	@RequestMapping("")
 	public String index(Model model) {
 		model.addAttribute("projects", projects.findAll());
 				
