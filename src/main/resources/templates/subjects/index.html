@@ -1,0 +1,39 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout">
+
+<head>
+<title>Projects</title>
+</head>
+<body>
+	<div class="row marketing" layout:fragment="content">
+       	<div class="col-lg-12">
+			<h4>Subjects</h4>
+			
+			<p>Select a subject below:</p>
+
+			<table class="table table-hover">
+				<tr>
+					<th>ID</th>
+					<th>Label</th>
+					<th>Project</th>
+					<th>Insert Date</th>
+					<th></th>
+				</tr>
+				<tr th:each="subject : ${subjects}">
+					<td th:text="${subject.id}"></td>
+					<td th:text="${subject.label}"></td>
+					<td th:text="${subject.projectId}"></td>
+					<td th:text="${#temporals.format(subject.insertDate, 'dd/MM/yyyy HH:mm')}"></td>
+					<td><a href="/subjects/subject-id/experiments"
+						th:href="@{/projects/{projectId}/subjects/{subjectId}/experiments(projectId=${subject.projectId},subjectId=${subject.label})}">View experiments</a></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,8 +1,8 @@
-package br.usp.ime.mig.hubble.xnat.project.response;
+package br.usp.ime.mig.hubble.xnat.project;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ApiResult {
+public class ProjectApiResult {
 
 	@JsonProperty("ID")
 	private String id;

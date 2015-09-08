@@ -1,4 +1,4 @@
-package br.usp.ime.mig.hubble.xnat;
+package br.usp.ime.mig.hubble.xnat.auth;
 
 import java.net.URI;
 

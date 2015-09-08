@@ -1,0 +1,62 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout">
+
+<head>
+<title>Projects</title>
+</head>
+<body>
+	<div class="row marketing" layout:fragment="content">
+       	<div class="col-lg-12">
+			<h4>Experiments</h4>
+			
+			<p>Select an experiment below, then select a scan to download:</p>
+
+			<table class="table table-hover">
+				<tr>
+					<th>ID</th>
+					<th>Label</th>
+					<th>Project</th>
+					<th>Subject</th>
+					<th>Date</th>
+					<th>Insert Date</th>
+					<th></th>
+				</tr>
+				<tr th:each="experiment : ${experiments}">
+					<td th:text="${experiment.id}"></td>
+					<td th:text="${experiment.label}"></td>
+					<td th:text="${experiment.projectId}"></td>
+					<td th:text="${experiment.subjectId}"></td>
+					<td th:text="${#temporals.format(experiment.date, 'dd/MM/yyyy')}"></td>
+					<td th:text="${#temporals.format(experiment.insertDate, 'dd/MM/yyyy HH:mm')}"></td>
+					<td><button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#scans-modal"
+							data-projectId="${experiment.projectId}"
+							data-subjectId="${experiment.subjectId}"
+							data-experimentId="${experiment.id}">Open scans</button></td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="scans-modal" class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+
+						<h4 class="modal-title">Scans</h4>
+					</div>
+					<div class="modal-body" id="scans-container-table">
+						...
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

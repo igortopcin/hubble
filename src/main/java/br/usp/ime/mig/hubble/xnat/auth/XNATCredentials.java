@@ -1,4 +1,4 @@
-package br.usp.ime.mig.hubble.xnat;
+package br.usp.ime.mig.hubble.xnat.auth;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;

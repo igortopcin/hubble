@@ -1,0 +1,21 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<table class="table table-hover">
+	<tr>
+		<th>ID</th>
+		<th>Description</th>
+		<th>Files</th>
+		<th>Total Size</th>
+		<th>Type</th>
+		<th>Quality</th>
+		<th></th>
+	</tr>
+	<tr th:each="scan : ${scans}">
+		<td th:text="${scan.id}"></td>
+		<td th:text="${scan.seriesDescription}"></td>
+		<td th:text="${scan.fileCount}"></td>
+		<td th:text="${scan.fileSize}"></td>
+		<td th:text="${scan.fileType}"></td>
+		<td th:text="${scan.quality}"></td>
+		<td>Download</td>
+	</tr>
+</table>
