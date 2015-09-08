@@ -32,10 +32,12 @@
 					<td th:text="${experiment.subjectId}"></td>
 					<td th:text="${#temporals.format(experiment.date, 'dd/MM/yyyy')}"></td>
 					<td th:text="${#temporals.format(experiment.insertDate, 'dd/MM/yyyy HH:mm')}"></td>
-					<td><button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#scans-modal"
-							data-projectId="${experiment.projectId}"
-							data-subjectId="${experiment.subjectId}"
-							data-experimentId="${experiment.id}">Open scans</button></td>
+					<td><button type="button" class="btn-open-scans btn btn-default btn-xs" th:attr="
+							data-project=${experiment.projectId},
+							data-subject=${experiment.subjectId},
+							data-experiment=${experiment.id}">
+						<span></span> Open scans
+					</button></td>
 				</tr>
 			</table>
 		</div>

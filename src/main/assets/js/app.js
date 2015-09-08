@@ -6,8 +6,12 @@ requirejs.config({
     "baseUrl": "/js/lib",
     "paths": {
       "app": "/js/app",
-      "jquery": "/js/jquery.min"
-    }
+      "jquery": "/js/jquery.min",
+	  "bootstrap": "/js/lib/bootstrap.min"
+    },
+	shim : {
+	    "bootstrap" : { "deps" :['jquery'] }
+	}
 });
 
 // Load the main app module to start the app

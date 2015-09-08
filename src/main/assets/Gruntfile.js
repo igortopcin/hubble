@@ -58,6 +58,13 @@ module.exports = function(grunt) {
 				src : [ 'bootstrap/dist/css/bootstrap.min.css' ],
 				dest : '../resources/static/css/'
 			},
+			vendor_fonts : {
+				expand : true,
+				flatten : true,
+				cwd : 'bower_components',
+				src : [ 'bootstrap/dist/fonts/*' ],
+				dest : '../resources/static/fonts'
+			},
 			vendor_js : {
 				expand : true,
 				flatten : true,
@@ -102,7 +109,7 @@ module.exports = function(grunt) {
 		grunt.loadNpmTasks('grunt-' + dependency);
 	});
 
-	grunt.registerTask('bower', [ 'bower-install-simple', 'copy:vendor_css',
+	grunt.registerTask('bower', [ 'bower-install-simple', 'copy:vendor_css', 'copy:vendor_fonts',
 			'copy:vendor_js', 'copy:jquery' ]);
 	grunt.registerTask('default', [ 'bower', 'jshint', 'less', 'concat' ]);
 
