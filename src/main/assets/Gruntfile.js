@@ -3,18 +3,6 @@ module.exports = function(grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
-		concat : {
-			options : {
-				separator : ';'
-			},
-			js : {
-				files : {
-					'../resources/static/js/app/main.js' : [ 'js/app/*.js' ],
-					'../resources/static/js/app.js' : [ 'js/app.js' ]
-				}
-			}
-		},
-
 		jshint : {
 			all : [ 'Gruntfile.js', 'js/**/*.js' ]
 		},
@@ -69,7 +57,7 @@ module.exports = function(grunt) {
 				expand : true,
 				flatten : true,
 				cwd : 'bower_components',
-				src : [ '**/bootstrap.min.js', '**/require.js' ],
+				src : [ '**/bootstrap.min.js', '**/require.js', '**/domReady.js' ],
 				dest : '../resources/static/js/lib'
 			},
 			jquery : {
@@ -77,6 +65,13 @@ module.exports = function(grunt) {
 				flatten : true,
 				cwd : 'bower_components',
 				src : [ '**/jquery.min.js' ],
+				dest : '../resources/static/js/'
+			},
+			js : {
+				expand : true,
+				flatten : false,
+				cwd : 'js',
+				src : [ '**/*.js' ],
 				dest : '../resources/static/js/'
 			}
 		},
@@ -93,11 +88,11 @@ module.exports = function(grunt) {
 		watch : {
 			js : {
 				files : [ 'js/**/*.js' ],
-				tasks : [ 'jshint', 'concat', 'notify' ]
+				tasks : [ 'jshint', 'copy:js' ]
 			},
 			style : {
 				files : [ 'less/**/*.less' ],
-				tasks : [ 'less', 'notify' ]
+				tasks : [ 'less' ]
 			}
 		}
 	});
@@ -111,6 +106,6 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('bower', [ 'bower-install-simple', 'copy:vendor_css', 'copy:vendor_fonts',
 			'copy:vendor_js', 'copy:jquery' ]);
-	grunt.registerTask('default', [ 'bower', 'jshint', 'less', 'concat' ]);
+	grunt.registerTask('default', [ 'bower', 'jshint', 'less', 'copy:js' ]);
 
 };

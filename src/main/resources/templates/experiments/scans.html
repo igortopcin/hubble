@@ -16,6 +16,12 @@
 		<td th:text="${scan.fileSize}"></td>
 		<td th:text="${scan.fileType}"></td>
 		<td th:text="${scan.quality}"></td>
-		<td>Download</td>
+		<td><button type="button" class="btn-send-to-galaxy btn btn-primary btn-xs" th:attr="
+				data-project=${scan.projectId},
+				data-subject=${scan.subjectId},
+				data-experiment=${scan.experimentId},
+				data-scan=${scan.id}">
+			<span></span> Send to Galaxy
+		</button></td>
 	</tr>
 </table>
