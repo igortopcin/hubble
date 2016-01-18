@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import br.usp.ime.mig.hubble.project.Project;
 import br.usp.ime.mig.hubble.project.Projects;
-import br.usp.ime.mig.hubble.xnat.ApiResponseWrapper;
+import br.usp.ime.mig.hubble.xnat.ListResponseWrapper;
 import br.usp.ime.mig.hubble.xnat.XNAT;
 
 import com.google.common.collect.Lists;
@@ -47,6 +47,7 @@ public class XNATProjects implements Projects {
 				project.setId(r.getId());
 				project.setName(r.getName());
 				project.setDescription(r.getDescription());
+				project.setRef(r.getUri());
 				return project;
 			});
 		}
@@ -54,7 +55,7 @@ public class XNATProjects implements Projects {
 		return projects;
 	}
 
-	public static class ProjectApiResponseWrapper extends ApiResponseWrapper<ProjectApiResult> {
+	public static class ProjectApiResponseWrapper extends ListResponseWrapper<ProjectApiResult> {
 	};
 
 }

@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import br.usp.ime.mig.hubble.subject.Subject;
 import br.usp.ime.mig.hubble.subject.Subjects;
-import br.usp.ime.mig.hubble.xnat.ApiResponseWrapper;
+import br.usp.ime.mig.hubble.xnat.ListResponseWrapper;
 import br.usp.ime.mig.hubble.xnat.XNAT;
 
 import com.google.common.collect.Lists;
@@ -24,14 +24,14 @@ public class XNATSubjects implements Subjects {
 
 	@Autowired
 	public XNATSubjects(@Value("${xnat.url}") String xnatBaseUrl, @XNAT RestTemplate restTemplate) {
-		this.serviceUrl = xnatBaseUrl + "/data/archive/projects/{projectId}/subjects?format=json";
+		this.serviceUrl = xnatBaseUrl + "{projectRef}/subjects?format=json";
 		this.restTemplate = restTemplate;
 	}
 
 	@Override
-	public List<Subject> findByProject(String projectId) {
+	public List<Subject> findByProject(String projectRef) {
 		SubjectApiResponseWrapper response = restTemplate.getForObject(serviceUrl,
-				SubjectApiResponseWrapper.class, projectId);
+				SubjectApiResponseWrapper.class, projectRef);
 
 		List<Subject> subjects = Collections.emptyList();
 
@@ -50,6 +50,6 @@ public class XNATSubjects implements Subjects {
 		return subjects;
 	}
 
-	public static class SubjectApiResponseWrapper extends ApiResponseWrapper<SubjectApiResult> {
+	public static class SubjectApiResponseWrapper extends ListResponseWrapper<SubjectApiResult> {
 	}
 }

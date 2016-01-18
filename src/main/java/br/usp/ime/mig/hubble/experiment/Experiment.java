@@ -3,7 +3,12 @@ package br.usp.ime.mig.hubble.experiment;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Experiment {
+import lombok.Data;
+import br.usp.ime.mig.hubble.externalcontent.ContentHandler;
+import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
+
+@Data
+public class Experiment implements Uploadable {
 
 	private String id;
 
@@ -17,52 +22,21 @@ public class Experiment {
 
 	private LocalDate date;
 
-	public String getId() {
-		return id;
+	// External reference, such as an unique ID or URI
+	private String ref;
+
+	@Override
+	public String getName() {
+		StringBuilder name = new StringBuilder()
+				.append(projectId).append("/")
+				.append(subjectId).append("/")
+				.append(label);
+		return name.toString();
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	public String getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(String projectId) {
-		this.projectId = projectId;
-	}
-
-	public String getSubjectId() {
-		return subjectId;
-	}
-
-	public void setSubjectId(String subjectId) {
-		this.subjectId = subjectId;
-	}
-
-	public LocalDateTime getInsertDate() {
-		return insertDate;
-	}
-
-	public void setInsertDate(LocalDateTime insertDate) {
-		this.insertDate = insertDate;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
+	@Override
+	public ContentHandler getContentHandler() {
+		return null;
 	}
 
 }

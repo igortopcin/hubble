@@ -1,6 +1,14 @@
 package br.usp.ime.mig.hubble.scan;
 
-public class Scan {
+import lombok.Data;
+import br.usp.ime.mig.hubble.experiment.Experiment;
+import br.usp.ime.mig.hubble.externalcontent.ContentHandler;
+import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
+
+import com.google.common.base.Joiner;
+
+@Data
+public class Scan implements Uploadable {
 
 	private String id;
 
@@ -14,82 +22,23 @@ public class Scan {
 
 	private String fileType;
 
-	private String projectId;
+	// External reference, such as an unique ID or URI
+	private String ref;
 
-	private String subjectId;
+	private Experiment experiment;
 
-	private String experimentId;
-
-	public String getId() {
-		return id;
+	@Override
+	public String getName() {
+		return Joiner.on(", ").skipNulls().join(
+				experiment == null ? null : experiment.getProjectId(),
+				experiment == null ? null : experiment.getSubjectId(),
+				experiment == null ? null : experiment.getId(),
+				id);
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getQuality() {
-		return quality;
-	}
-
-	public void setQuality(String quality) {
-		this.quality = quality;
-	}
-
-	public String getSeriesDescription() {
-		return seriesDescription;
-	}
-
-	public void setSeriesDescription(String seriesDescription) {
-		this.seriesDescription = seriesDescription;
-	}
-
-	public long getFileSize() {
-		return fileSize;
-	}
-
-	public void setFileSize(long fileSize) {
-		this.fileSize = fileSize;
-	}
-
-	public int getFileCount() {
-		return fileCount;
-	}
-
-	public void setFileCount(int fileCount) {
-		this.fileCount = fileCount;
-	}
-
-	public String getFileType() {
-		return fileType;
-	}
-
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
-	}
-
-	public String getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(String projectId) {
-		this.projectId = projectId;
-	}
-
-	public String getSubjectId() {
-		return subjectId;
-	}
-
-	public void setSubjectId(String subjectId) {
-		this.subjectId = subjectId;
-	}
-
-	public String getExperimentId() {
-		return experimentId;
-	}
-
-	public void setExperimentId(String experimentId) {
-		this.experimentId = experimentId;
+	@Override
+	public ContentHandler getContentHandler() {
+		return null;
 	}
 
 }

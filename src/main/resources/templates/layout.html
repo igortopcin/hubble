@@ -29,7 +29,9 @@
 			<nav>
 				<ul class="nav nav-pills pull-right">
 					<li role="presentation"><a href="#" th:href="@{/}">Projects</a></li>
-					<li role="presentation"><a href="#" th:href="@{/back-to-galaxy}">Back to Galaxy</a></li>
+					<li role="presentation"><a href="#" th:href="@{/galaxy/selected-items}">Send Selected 
+						(<span id="selected-total" th:text="${@galaxyContext.selectedUploadablesSize}">0</span>)</a></li>
+					<li role="presentation"><a href="#" th:href="@{/galaxy/back}">Exit</a></li>
 				</ul>
 			</nav>
 			<h3 class="text-muted">Hubble</h3>

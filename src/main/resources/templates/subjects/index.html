@@ -28,8 +28,8 @@
 					<td th:text="${subject.label}"></td>
 					<td th:text="${subject.projectId}"></td>
 					<td th:text="${#temporals.format(subject.insertDate, 'dd/MM/yyyy HH:mm')}"></td>
-					<td><a href="/subjects/subject-id/experiments"
-						th:href="@{/projects/{projectId}/subjects/{subjectId}/experiments(projectId=${subject.projectId},subjectId=${subject.label})}">View experiments</a></td>
+					<td><a href="/experiments"
+						th:href="@{/experiments(projectId=${subject.projectId},subjectId=${subject.label})}">View experiments</a></td>
 				</tr>
 			</table>
 		</div>

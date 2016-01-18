@@ -2,7 +2,7 @@ package br.usp.ime.mig.hubble.xnat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ApiResponseWrapper<T> {
+public class ListResponseWrapper<T> {
 
 	@JsonProperty("ResultSet")
 	private ApiResultSet<T> resultSet;

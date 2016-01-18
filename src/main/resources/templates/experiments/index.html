@@ -25,6 +25,7 @@
 					<th>Date</th>
 					<th>Insert Date</th>
 					<th></th>
+					<th></th>
 				</tr>
 				<tr th:each="experiment : ${experiments}">
 					<td th:text="${experiment.id}"></td>
@@ -34,10 +35,12 @@
 					<td th:text="${#temporals.format(experiment.date, 'dd/MM/yyyy')}"></td>
 					<td th:text="${#temporals.format(experiment.insertDate, 'dd/MM/yyyy HH:mm')}"></td>
 					<td><button type="button" class="btn-open-scans btn btn-default btn-xs" th:attr="
-							data-project=${experiment.projectId},
-							data-subject=${experiment.subjectId},
-							data-experiment=${experiment.id}">
+							data-experiment=${experiment.ref}">
 						<span></span> Open scans
+					</button></td>
+					<td><button type="button" class="btn-send-experiment-to-galaxy btn btn-default btn-xs" th:attr="
+							data-experiment=${experiment.ref}">
+						<span></span> Send to Galaxy
 					</button></td>
 				</tr>
 			</table>

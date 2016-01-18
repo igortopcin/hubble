@@ -26,8 +26,8 @@
 					<td th:text="${project.id}">TEST</td>
 					<td th:text="${project.name}">Testing</td>
 					<td th:text="${project.description}">Data import testing</td>
-					<td><a href="/projects/test-project-id/subjects"
-						th:href="@{/projects/{projectId}/subjects(projectId=${project.id})}">View subjects</a></td>
+					<td><a href="/subjects"
+						th:href="@{/subjects(projectRef=${project.ref})}">View subjects</a></td>
 				</tr>
 			</table>
 		</div>

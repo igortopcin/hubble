@@ -3,7 +3,10 @@ package br.usp.ime.mig.hubble.scan;
 import java.util.List;
 
 public interface Scans {
-	List<Scan> findByProjectAndSubjectAndExperiment(String projectId, String subjectId, String experimentId);
+	List<Scan> findByExperiment(String experimentRef);
 
-	void download(String projectId, String subjectId, String experimentId, String scanId);
+	void download(Scan scan);
+
+	Scan findByRef(String scanRef);
+
 }

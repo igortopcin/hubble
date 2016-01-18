@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/back-to-galaxy")
+@RequestMapping("/galaxy")
 public class GalaxyController {
 
 	private final GalaxyContext galaxyContext;
@@ -15,9 +15,14 @@ public class GalaxyController {
 		this.galaxyContext = galaxyContext;
 	}
 
-	@RequestMapping
+	@RequestMapping("back")
 	public String sendUserBackToGalaxy() {
 		return "redirect:" + galaxyContext.getReturnUrl();
+	}
+
+	@RequestMapping("selected-items")
+	public String viewSelectedUploadables() {
+		return "galaxy/index";
 	}
 
 }

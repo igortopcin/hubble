@@ -2,18 +2,23 @@ package br.usp.ime.mig.hubble.xnat.scan;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import br.usp.ime.mig.hubble.experiment.Experiment;
+import br.usp.ime.mig.hubble.experiment.Experiments;
 import br.usp.ime.mig.hubble.scan.Scan;
 import br.usp.ime.mig.hubble.scan.Scans;
-import br.usp.ime.mig.hubble.xnat.ApiResponseWrapper;
+import br.usp.ime.mig.hubble.xnat.ListResponseWrapper;
 import br.usp.ime.mig.hubble.xnat.XNAT;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 @Service
@@ -23,13 +28,17 @@ public class XNATScans implements Scans {
 
 	private final String downloadScanUrl;
 
-	private final String downloadAllUrl;
+	private final RestTemplate restTemplate;
 
-	private RestTemplate restTemplate;
+	private final Experiments experiments;
+
+	public static final XNATScanConverter CONVERTER = new XNATScanConverter();
 
 	@Autowired
-	public XNATScans(@Value("${xnat.url}") String xnatBaseUrl, @XNAT RestTemplate restTemplate) {
-		String scansBaseUrl = "/data/archive/projects/{projectId}/subjects/{subjectId}/experiments/{experimentId}/scans";
+	public XNATScans(@Value("${xnat.url}") String xnatBaseUrl,
+			@XNAT RestTemplate restTemplate,
+			Experiments experiments) {
+		String scansBaseUrl = "{experimentRef}/scans";
 
 		String[] columns = { "ID",
 				"quality",
@@ -39,45 +48,65 @@ public class XNATScans implements Scans {
 				"xnat:mrScanData/file[0]/file_count",
 				"xnat:mrScanData/file[0]/label" };
 
-		this.findAllScansUrl = xnatBaseUrl + scansBaseUrl + "?format=json&columns=" + Joiner.on(",").join(columns);
-		this.downloadScanUrl = xnatBaseUrl + scansBaseUrl + "/{scanId}/files?format=zip";
-		this.downloadAllUrl = xnatBaseUrl + scansBaseUrl + "/ALL/files?format=zip";
+		this.findAllScansUrl = xnatBaseUrl + scansBaseUrl + "?format=json&file_format=DICOM&columns="
+				+ Joiner.on(",").join(columns);
+		this.downloadScanUrl = xnatBaseUrl + scansBaseUrl + "/{scanId}/files?format=zip&file_format=DICOM";
 		this.restTemplate = restTemplate;
+		this.experiments = experiments;
 	}
 
 	@Override
-	public List<Scan> findByProjectAndSubjectAndExperiment(String projectId, String subjectId, String experimentId) {
+	public List<Scan> findByExperiment(String experimentRef) {
+		Experiment experiment = experiments.findByRef(experimentRef);
+
 		ScanApiResponseWrapper response = restTemplate.getForObject(findAllScansUrl,
-				ScanApiResponseWrapper.class, projectId, subjectId, experimentId);
+				ScanApiResponseWrapper.class, experimentRef);
 
 		List<Scan> scans = Collections.emptyList();
 
 		if (response != null) {
-			scans = Lists.transform(response.getResultSet().getResults(), (ScanApiResult r) -> {
-				Scan scan = new Scan();
-
-				scan.setId(r.getId());
-				scan.setQuality(r.getQuality());
-				scan.setFileType(r.getLabel());
-				scan.setSeriesDescription(r.getSeriesDescription());
-				scan.setFileCount(r.getFileCount());
-				scan.setFileSize(r.getFileSize());
-				scan.setProjectId(projectId);
-				scan.setSubjectId(subjectId);
-				scan.setExperimentId(experimentId);
-
+			scans = Lists.transform(response.getResultSet().getResults(), r -> {
+				Scan scan = CONVERTER.apply(r);
+				scan.setExperiment(experiment);
 				return scan;
 			});
 		}
 
-		return scans;
+		return scans.stream()
+				.filter(s -> "DICOM".equals(s.getFileType()))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public void download(String projectId, String subjectId, String experimentId, String scanId) {
+	public Scan findByRef(String scanRef) {
+		Preconditions.checkNotNull(scanRef);
+
+		String experimentRef = scanRef.substring(0, scanRef.lastIndexOf('/')).replace("/scans", "");
+		Experiment experiment = experiments.findByRef(experimentRef);
+
+		ScanApiResponseWrapper response = restTemplate.getForObject(findAllScansUrl,
+				ScanApiResponseWrapper.class, experimentRef);
+
+		Optional<Scan> scan = Optional.empty();
+		if (response != null) {
+			scan = response.getResultSet().getResults().stream()
+					.filter(r -> scanRef.equals(r.getUri()) && "DICOM".equals(r.getLabel()))
+					.map(r -> {
+						Scan s = CONVERTER.apply(r);
+						s.setExperiment(experiment);
+						return s;
+					}).findFirst();
+		}
+
+		return scan.orElse(null);
+	}
+
+	@Override
+	public void download(Scan scan) {
 
 	}
 
-	public static class ScanApiResponseWrapper extends ApiResponseWrapper<ScanApiResult> {
+	public static class ScanApiResponseWrapper extends ListResponseWrapper<ScanApiResult> {
 	}
+
 }

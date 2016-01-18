@@ -1,27 +1,32 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
-<table class="table table-hover">
+<table
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	class="table table-hover">
 	<tr>
 		<th>ID</th>
 		<th>Description</th>
 		<th>Files</th>
-		<th>Total Size</th>
+		<th>Total Size (KB)</th>
 		<th>Type</th>
 		<th>Quality</th>
 		<th></th>
 	</tr>
-	<tr th:each="scan : ${scans}">
+	<tr th:each="scan : ${scans}" th:inline="text">
 		<td th:text="${scan.id}"></td>
 		<td th:text="${scan.seriesDescription}"></td>
-		<td th:text="${scan.fileCount}"></td>
-		<td th:text="${scan.fileSize}"></td>
+		<td th:text="${#numbers.formatInteger(scan.fileCount, 3, 'COMMA')}"></td>
+		<td th:text="${#numbers.formatInteger(scan.fileSize/1000, 3, 'COMMA')}"></td>
 		<td th:text="${scan.fileType}"></td>
 		<td th:text="${scan.quality}"></td>
-		<td><button type="button" class="btn-send-to-galaxy btn btn-primary btn-xs" th:attr="
-				data-project=${scan.projectId},
-				data-subject=${scan.subjectId},
-				data-experiment=${scan.experimentId},
-				data-scan=${scan.id}">
-			<span></span> Send to Galaxy
-		</button></td>
+		<td th:with="selected=${#lists.contains(@galaxyContext.selectedUploadables, scan)}">
+			<button type="button"
+					class="btn-send-scan-to-galaxy btn btn-primary btn-xs"
+					th:class="'btn-send-scan-to-galaxy btn btn-xs ' + ${selected ? 'btn-success' : 'btn-primary'}"
+					th:attr="data-scan=${scan.ref},
+							 data-selected=${selected}">
+				<span th:class="'glyphicon ' + ${selected ? ' glyphicon-ok' : ''}"></span> Send to Galaxy
+			</button>
+		</td>
 	</tr>
 </table>

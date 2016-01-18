@@ -1,6 +1,6 @@
 requirejs(['domReady!', 'jquery', 'bootstrap'], function(doc, $) {
 	var bindModalEvents = function() { 
-		$('.btn-send-to-galaxy').click(function(event) {
+		$('.btn-send-scan-to-galaxy').click(function(event) {
 			var $button = $(event.target);
 			var $loadingIcon = $button.find('span');
 			
@@ -12,6 +12,10 @@ requirejs(['domReady!', 'jquery', 'bootstrap'], function(doc, $) {
 			console.log('Sending it to galaxy...');
 			
 			$loadingIcon.addClass('glyphicon glyphicon-refresh glyphicon-refresh-animate');
+
+			$.get('/scans/sendToGalaxy?scanId=' + scanId + '&experimentId='+ experimentId + '&subjectId=' + subjectId + '&projectId=' + projectId, function(data) {
+				$loadingIcon.removeClass('glyphicon glyphicon-refresh glyphicon-refresh-animate');
+			});
 		});
 	};
 	

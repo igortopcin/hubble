@@ -18,9 +18,9 @@ public class SubjectsController {
 	}
 
 	@RequestMapping
-	public String index(@RequestParam("projectId") String projectId, Model model) {
-		model.addAttribute("projectId", projectId);
-		model.addAttribute("subjects", subjects.findByProject(projectId));
+	public String index(@RequestParam("projectRef") String projectRef, Model model) {
+		model.addAttribute("projectRef", projectRef);
+		model.addAttribute("subjects", subjects.findByProject(projectRef));
 				
 		return "subjects/index";
 	}
