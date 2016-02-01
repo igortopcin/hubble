@@ -1,11 +1,16 @@
 package br.usp.ime.mig.hubble.galaxy.dataset;
 
-import br.usp.ime.mig.hubble.externalcontent.ContentHandler;
 
 public interface Uploadable {
-	String getName();
+	String getScanLabel();
+
+	String getExperimentLabel();
+
+	String getProjectLabel();
+
+	String getSubjectLabel();
 
 	String getRef();
 
-	ContentHandler getContentHandler();
+	UploadableType getType();
 }

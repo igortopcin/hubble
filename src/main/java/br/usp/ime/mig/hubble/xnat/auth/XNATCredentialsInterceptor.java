@@ -5,7 +5,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -26,14 +31,40 @@ public class XNATCredentialsInterceptor extends HandlerInterceptorAdapter {
 		String password = request.getParameter("xnat_password");
 
 		if (user == null && credentials.getUser() == null && !request.getRequestURI().endsWith("logged-out")) {
-			response.sendRedirect("/logged-out");
+			if (assertThatAcceptHeaderIsTextHttp(request, response)
+					|| assertThatResponseContentTypeIsTextHttp(response, handler)) {
+				response.sendRedirect("/logged-out");
+			} else {
+				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			}
 			return false;
 		} else if (user != null) {
 			credentials.setUser(user);
 			credentials.setPassword(password);
 		}
-
 		return true;
+	}
+
+	private boolean assertThatResponseContentTypeIsTextHttp(HttpServletResponse response, Object handler) {
+		if (handler instanceof HandlerMethod) {
+			HandlerMethod method = (HandlerMethod) handler;
+			RequestMapping requestMapping = method.getMethodAnnotation(RequestMapping.class);
+			if (requestMapping == null || requestMapping.produces() == null) {
+				return true;
+			}
+			for (String contentTypeValue : requestMapping.produces()) {
+				MediaType mediaType = MediaType.valueOf(contentTypeValue);
+				if (MediaType.TEXT_HTML.isCompatibleWith(mediaType)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean assertThatAcceptHeaderIsTextHttp(HttpServletRequest request, HttpServletResponse response) {
+		String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+		return acceptHeader == null || acceptHeader.contains(MediaType.TEXT_HTML_VALUE);
 	}
 
 	@Configuration

@@ -2,6 +2,7 @@ package br.usp.ime.mig.hubble.xnat.experiment;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,14 +13,16 @@ import org.springframework.web.client.RestTemplate;
 import br.usp.ime.mig.hubble.cache.CacheConfiguration;
 import br.usp.ime.mig.hubble.experiment.Experiment;
 import br.usp.ime.mig.hubble.experiment.Experiments;
+import br.usp.ime.mig.hubble.galaxy.dataset.UploadableType;
 import br.usp.ime.mig.hubble.xnat.ListResponseWrapper;
 import br.usp.ime.mig.hubble.xnat.XNAT;
+import br.usp.ime.mig.hubble.xnat.scan.UploadableFinder;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 @Service
-public class XNATExperiments implements Experiments {
+public class XNATExperiments implements Experiments, UploadableFinder {
 
 	private static final XNATExperimentConverter CONVERTER = new XNATExperimentConverter();
 
@@ -55,7 +58,7 @@ public class XNATExperiments implements Experiments {
 
 	@Override
 	@Cacheable(CacheConfiguration.EXPERIMENTS_CACHE)
-	public Experiment findByRef(String experimentRef) {
+	public Optional<Experiment> findByRef(String experimentRef) {
 		Preconditions.checkNotNull(experimentRef);
 
 		String[] splittedRef = experimentRef.split("/");
@@ -63,13 +66,18 @@ public class XNATExperiments implements Experiments {
 		ExperimentApiResponseWrapper response = restTemplate.getForObject(findExperimentUrl,
 				ExperimentApiResponseWrapper.class, id);
 
-		Experiment experiment = null;
+		Optional<Experiment> experiment = Optional.empty();
 
 		if (response != null && !response.getResultSet().getResults().isEmpty()) {
-			experiment = CONVERTER.apply(response.getResultSet().getResults().get(0));
+			experiment = Optional.of(CONVERTER.apply(response.getResultSet().getResults().get(0)));
 		}
 
 		return experiment;
+	}
+
+	@Override
+	public UploadableType getUploadableType() {
+		return UploadableType.EXPERIMENT;
 	}
 
 	public static class ExperimentApiResponseWrapper extends ListResponseWrapper<ExperimentApiResult> {

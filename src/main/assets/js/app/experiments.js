@@ -1,23 +1,5 @@
-requirejs(['domReady!', 'jquery', 'bootstrap'], function(doc, $) {
-	var bindModalEvents = function() { 
-		$('.btn-send-scan-to-galaxy').click(function(event) {
-			var $button = $(event.target);
-			var $loadingIcon = $button.find('span');
-			
-			var projectId = $button.data('project');
-			var subjectId = $button.data('subject');
-			var experimentId = $button.data('experiment');
-			var scanId = $button.data('scan');
-			
-			console.log('Sending it to galaxy...');
-			
-			$loadingIcon.addClass('glyphicon glyphicon-refresh glyphicon-refresh-animate');
-
-			$.get('/scans/sendToGalaxy?scanId=' + scanId + '&experimentId='+ experimentId + '&subjectId=' + subjectId + '&projectId=' + projectId, function(data) {
-				$loadingIcon.removeClass('glyphicon glyphicon-refresh glyphicon-refresh-animate');
-			});
-		});
-	};
+requirejs(['domReady!', 'app/galaxy', 'jquery', 'bootstrap'], function(doc, galaxy, $) {
+	galaxy.bind('.btn-send-experiment-to-galaxy');
 	
 	var $modal = $('#scans-modal');
 
@@ -25,16 +7,14 @@ requirejs(['domReady!', 'jquery', 'bootstrap'], function(doc, $) {
 		var $button = $(event.target);
 		var $loadingIcon = $button.find('span');
 
-		var projectId = $button.data('project');
-		var subjectId = $button.data('subject');
-		var experimentId = $button.data('experiment');
+		var experimentRef = $button.data('experiment');
 
 		$loadingIcon.addClass('glyphicon glyphicon-refresh glyphicon-refresh-animate');
 		
-		$.get('/scans?experimentId='+ experimentId + '&subjectId=' + subjectId + '&projectId=' + projectId, function(data) {
+		$.get('/scans?experimentRef='+ experimentRef, function(data) {
 			$modal.find('.modal-body').html(data);
 			$modal.modal('show');
-			bindModalEvents();
+			galaxy.bind('.btn-send-scan-to-galaxy');
 			$loadingIcon.removeClass('glyphicon glyphicon-refresh glyphicon-refresh-animate');
 		});
 	});

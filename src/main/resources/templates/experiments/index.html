@@ -11,7 +11,7 @@
 </head>
 <body>
 	<div class="row marketing" layout:fragment="content">
-       	<div class="col-lg-12">
+		<div class="col-lg-12">
 			<h4>Experiments</h4>
 			
 			<p>Select an experiment below, then select a scan to download:</p>
@@ -25,7 +25,6 @@
 					<th>Date</th>
 					<th>Insert Date</th>
 					<th></th>
-					<th></th>
 				</tr>
 				<tr th:each="experiment : ${experiments}">
 					<td th:text="${experiment.id}"></td>
@@ -34,14 +33,23 @@
 					<td th:text="${experiment.subjectId}"></td>
 					<td th:text="${#temporals.format(experiment.date, 'dd/MM/yyyy')}"></td>
 					<td th:text="${#temporals.format(experiment.insertDate, 'dd/MM/yyyy HH:mm')}"></td>
-					<td><button type="button" class="btn-open-scans btn btn-default btn-xs" th:attr="
-							data-experiment=${experiment.ref}">
-						<span></span> Open scans
-					</button></td>
-					<td><button type="button" class="btn-send-experiment-to-galaxy btn btn-default btn-xs" th:attr="
-							data-experiment=${experiment.ref}">
-						<span></span> Send to Galaxy
-					</button></td>
+					<td th:with="selected=${#lists.contains(@galaxyContext.selectedUploadables, experiment)}">
+						<button type="button" class="btn-open-scans btn btn-default btn-xs btn-block" th:attr="
+								data-experiment=${experiment.ref}">
+							<span></span> Open scans
+						</button>
+						<button type="button"
+							class="btn-send-experiment-to-galaxy btn btn-primary btn-xs btn-block"
+							th:class="'btn-send-experiment-to-galaxy btn btn-xs btn-block ' + ${selected ? 'btn-success' : 'btn-primary'}"
+							th:attr="data-ref=${experiment.ref},
+									 data-type=${experiment.type},
+									 data-selected=${selected},
+									 data-selectedtext='Selected',
+									 data-unselectedtext='Send to Galaxy'">
+							<span th:class="'button-icon glyphicon ' + ${selected ? ' glyphicon-ok' : ''}"></span> 
+							<span class="button-text" th:text="${selected ? 'Selected' : 'Send to Galaxy'}">Selected</span>
+						</button>
+					</td>
 				</tr>
 			</table>
 		</div>

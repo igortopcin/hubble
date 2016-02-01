@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import br.usp.ime.mig.hubble.experiment.Experiment;
 import br.usp.ime.mig.hubble.experiment.Experiments;
+import br.usp.ime.mig.hubble.galaxy.dataset.UploadableType;
 import br.usp.ime.mig.hubble.scan.Scan;
 import br.usp.ime.mig.hubble.scan.Scans;
 import br.usp.ime.mig.hubble.xnat.ListResponseWrapper;
@@ -22,7 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 @Service
-public class XNATScans implements Scans {
+public class XNATScans implements Scans, UploadableFinder {
 
 	private final String findAllScansUrl;
 
@@ -57,48 +58,54 @@ public class XNATScans implements Scans {
 
 	@Override
 	public List<Scan> findByExperiment(String experimentRef) {
-		Experiment experiment = experiments.findByRef(experimentRef);
+		Optional<Experiment> experiment = experiments.findByRef(experimentRef);
+		if (!experiment.isPresent()) {
+			return Collections.emptyList();
+		}
 
 		ScanApiResponseWrapper response = restTemplate.getForObject(findAllScansUrl,
 				ScanApiResponseWrapper.class, experimentRef);
-
-		List<Scan> scans = Collections.emptyList();
-
-		if (response != null) {
-			scans = Lists.transform(response.getResultSet().getResults(), r -> {
-				Scan scan = CONVERTER.apply(r);
-				scan.setExperiment(experiment);
-				return scan;
-			});
+		if (response == null || response.getResultSet().getTotalRecords() == 0) {
+			return Collections.emptyList();
 		}
 
-		return scans.stream()
+		return Lists.transform(response.getResultSet().getResults(), r -> {
+			Scan scan = CONVERTER.apply(r);
+			scan.setExperiment(experiment.get());
+			return scan;
+		}).stream()
 				.filter(s -> "DICOM".equals(s.getFileType()))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Scan findByRef(String scanRef) {
+	public Optional<Scan> findByRef(String scanRef) {
 		Preconditions.checkNotNull(scanRef);
 
 		String experimentRef = scanRef.substring(0, scanRef.lastIndexOf('/')).replace("/scans", "");
-		Experiment experiment = experiments.findByRef(experimentRef);
+		Optional<Experiment> experiment = experiments.findByRef(experimentRef);
+		if (!experiment.isPresent()) {
+			return Optional.empty();
+		}
 
 		ScanApiResponseWrapper response = restTemplate.getForObject(findAllScansUrl,
 				ScanApiResponseWrapper.class, experimentRef);
-
-		Optional<Scan> scan = Optional.empty();
-		if (response != null) {
-			scan = response.getResultSet().getResults().stream()
-					.filter(r -> scanRef.equals(r.getUri()) && "DICOM".equals(r.getLabel()))
-					.map(r -> {
-						Scan s = CONVERTER.apply(r);
-						s.setExperiment(experiment);
-						return s;
-					}).findFirst();
+		if (response == null) {
+			return Optional.empty();
 		}
 
-		return scan.orElse(null);
+		return response.getResultSet().getResults().stream()
+				.filter(r -> scanRef.equals(r.getUri()) && "DICOM".equals(r.getLabel()))
+				.map(r -> {
+					Scan s = CONVERTER.apply(r);
+					s.setExperiment(experiment.get());
+					return s;
+				}).findFirst();
+	}
+
+	@Override
+	public UploadableType getUploadableType() {
+		return UploadableType.SCAN;
 	}
 
 	@Override

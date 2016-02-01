@@ -33,7 +33,7 @@ public class ScansController {
 	public @ResponseBody long sendToGalaxy(String scanRef) {
 		boolean removed = context.getSelectedUploadables().removeIf(u -> scanRef.equals(u.getRef()));
 		if (!removed) {
-			Scan scan = scans.findByRef(scanRef);
+			Scan scan = scans.findByRef(scanRef).orElse(null);
 			context.addUploadables(scan);
 		}
 		return context.getSelectedUploadablesSize();

@@ -21,11 +21,15 @@
 		<td th:text="${scan.quality}"></td>
 		<td th:with="selected=${#lists.contains(@galaxyContext.selectedUploadables, scan)}">
 			<button type="button"
-					class="btn-send-scan-to-galaxy btn btn-primary btn-xs"
-					th:class="'btn-send-scan-to-galaxy btn btn-xs ' + ${selected ? 'btn-success' : 'btn-primary'}"
-					th:attr="data-scan=${scan.ref},
-							 data-selected=${selected}">
-				<span th:class="'glyphicon ' + ${selected ? ' glyphicon-ok' : ''}"></span> Send to Galaxy
+					class="btn-send-scan-to-galaxy btn btn-primary btn-xs btn-block"
+					th:class="'btn-send-scan-to-galaxy btn btn-xs btn-block ' + ${selected ? 'btn-success' : 'btn-primary'}"
+					th:attr="data-ref=${scan.ref},
+							 data-type=${scan.type},
+							 data-selected=${selected},
+							 data-selectedtext='Selected',
+							 data-unselectedtext='Send to Galaxy'">
+				<span th:class="'button-icon glyphicon ' + ${selected ? ' glyphicon-ok' : ''}"></span> 
+				<span class="button-text" th:text="${selected ? 'Selected' : 'Send to Galaxy'}">Selected</span>
 			</button>
 		</td>
 	</tr>

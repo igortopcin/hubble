@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Data;
-import br.usp.ime.mig.hubble.externalcontent.ContentHandler;
 import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
+import br.usp.ime.mig.hubble.galaxy.dataset.UploadableType;
 
 @Data
 public class Experiment implements Uploadable {
@@ -26,17 +26,28 @@ public class Experiment implements Uploadable {
 	private String ref;
 
 	@Override
-	public String getName() {
-		StringBuilder name = new StringBuilder()
-				.append(projectId).append("/")
-				.append(subjectId).append("/")
-				.append(label);
-		return name.toString();
+	public UploadableType getType() {
+		return UploadableType.EXPERIMENT;
 	}
 
 	@Override
-	public ContentHandler getContentHandler() {
-		return null;
+	public String getScanLabel() {
+		return "ALL";
+	}
+
+	@Override
+	public String getExperimentLabel() {
+		return label;
+	}
+
+	@Override
+	public String getProjectLabel() {
+		return projectId;
+	}
+
+	@Override
+	public String getSubjectLabel() {
+		return subjectId;
 	}
 
 }

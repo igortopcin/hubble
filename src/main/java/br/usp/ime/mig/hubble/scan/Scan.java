@@ -2,10 +2,8 @@ package br.usp.ime.mig.hubble.scan;
 
 import lombok.Data;
 import br.usp.ime.mig.hubble.experiment.Experiment;
-import br.usp.ime.mig.hubble.externalcontent.ContentHandler;
 import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
-
-import com.google.common.base.Joiner;
+import br.usp.ime.mig.hubble.galaxy.dataset.UploadableType;
 
 @Data
 public class Scan implements Uploadable {
@@ -28,17 +26,28 @@ public class Scan implements Uploadable {
 	private Experiment experiment;
 
 	@Override
-	public String getName() {
-		return Joiner.on(", ").skipNulls().join(
-				experiment == null ? null : experiment.getProjectId(),
-				experiment == null ? null : experiment.getSubjectId(),
-				experiment == null ? null : experiment.getId(),
-				id);
+	public UploadableType getType() {
+		return UploadableType.SCAN;
 	}
 
 	@Override
-	public ContentHandler getContentHandler() {
-		return null;
+	public String getScanLabel() {
+		return id;
+	}
+
+	@Override
+	public String getExperimentLabel() {
+		return experiment == null ? null : experiment.getLabel();
+	}
+
+	@Override
+	public String getProjectLabel() {
+		return experiment == null ? null : experiment.getProjectId();
+	}
+
+	@Override
+	public String getSubjectLabel() {
+		return experiment == null ? null : experiment.getSubjectId();
 	}
 
 }
