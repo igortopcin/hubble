@@ -6,7 +6,6 @@ import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
 import br.usp.ime.mig.hubble.galaxy.dataset.UploadableType;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 
 @Data
 public class Scan implements Uploadable {
@@ -50,13 +49,15 @@ public class Scan implements Uploadable {
 
 	@Override
 	public String getSubjectLabel() {
-		return experiment == null ? null : experiment.getSubjectId();
+		return experiment == null ? null : experiment.getSubjectLabel();
 	}
 
 	@Override
 	public String getFileName() {
-		Iterable<String> parts = Splitter.on("/").omitEmptyStrings().split(ref);
-		return Joiner.on("-").join(parts) + ".zip";
+		return Joiner.on("-").skipNulls()
+				.join(getProjectLabel(), getSubjectLabel(), getExperimentLabel(), getScanLabel())
+				.toLowerCase()
+				.replace(' ', '-');
 	}
 
 }

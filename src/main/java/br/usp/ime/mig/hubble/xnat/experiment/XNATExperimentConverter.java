@@ -17,6 +17,7 @@ public class XNATExperimentConverter implements Function<ExperimentApiResult, Ex
 		experiment.setProjectId(r.getProjectId());
 		experiment.setSubjectId(r.getSubjectId());
 		experiment.setRef(r.getUri());
+		experiment.setSubjectLabel(r.getSubjectLabel());
 		return experiment;
 	}
 

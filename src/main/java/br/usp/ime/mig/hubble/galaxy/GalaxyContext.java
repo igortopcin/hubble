@@ -3,6 +3,7 @@ package br.usp.ime.mig.hubble.galaxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -15,6 +16,8 @@ import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
 public class GalaxyContext {
 
 	private String returnUrl;
+
+	private String userUUID = UUID.randomUUID().toString();
 
 	private final List<Uploadable> selectedUploadables = new ArrayList<>();
 
@@ -36,6 +39,10 @@ public class GalaxyContext {
 
 	public long getSelectedUploadablesSize() {
 		return selectedUploadables.size();
+	}
+
+	public String getUserUUID() {
+		return userUUID;
 	}
 
 }

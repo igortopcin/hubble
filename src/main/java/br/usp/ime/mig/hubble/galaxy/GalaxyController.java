@@ -1,8 +1,12 @@
 package br.usp.ime.mig.hubble.galaxy;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -11,34 +15,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import br.usp.ime.mig.hubble.downloader.FileDownloader;
+import br.usp.ime.mig.hubble.downloader.FileDownloaderFactory;
+import br.usp.ime.mig.hubble.downloader.UploadableURLResolver;
 import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
 import br.usp.ime.mig.hubble.galaxy.dataset.UploadableType;
-import br.usp.ime.mig.hubble.xnat.XNATDownloadHelper;
-import br.usp.ime.mig.hubble.xnat.XNATDownloadHelper.Factory;
 
 import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/galaxy")
+@Slf4j
 public class GalaxyController {
 
 	private final GalaxyContext galaxyContext;
 
 	private final Map<UploadableType, UploadableFinder> finders;
 
-	private final Map<UploadableType, FileDownloader> downloaders;
+	private final Map<UploadableType, UploadableURLResolver> urlResolvers;
 
-	private final Factory downloadHelperFactory;
+	private final FileDownloaderFactory downloaderFactory;
 
 	@Autowired
 	public GalaxyController(GalaxyContext galaxyContext,
 			List<UploadableFinder> finders,
-			List<FileDownloader> downloaders,
-			XNATDownloadHelper.Factory downloadHelperFactory) {
+			List<UploadableURLResolver> urlResolvers,
+			FileDownloaderFactory downloaderFactory) {
 		this.galaxyContext = galaxyContext;
-		this.downloadHelperFactory = downloadHelperFactory;
+		this.downloaderFactory = downloaderFactory;
 		this.finders = Maps.uniqueIndex(finders, UploadableFinder::getUploadableType);
-		this.downloaders = Maps.uniqueIndex(downloaders, FileDownloader::getUploadableType);
+		this.urlResolvers = Maps.uniqueIndex(urlResolvers, UploadableURLResolver::getUploadableType);
 	}
 
 	@RequestMapping("back")
@@ -79,11 +85,18 @@ public class GalaxyController {
 			consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public @ResponseBody void send() {
-		XNATDownloadHelper helper = downloadHelperFactory.create();
+		FileDownloader downloader = downloaderFactory.create();
 
 		galaxyContext.getSelectedUploadables()
 				.parallelStream()
-				.forEach(u -> downloaders.get(u.getType()).download(u, helper));
+				.forEach(u -> {
+					try {
+						URL url = urlResolvers.get(u.getType()).apply(u);
+						downloader.download(url, u);
+					} catch (IOException e) {
+						log.error("Failed to upload {}", u, e);
+					}
+				});
 
 		galaxyContext.getSelectedUploadables().clear();
 	}

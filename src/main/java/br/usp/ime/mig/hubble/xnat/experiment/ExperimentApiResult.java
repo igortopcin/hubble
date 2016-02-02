@@ -37,4 +37,7 @@ public class ExperimentApiResult {
 	@JsonProperty("subject_ID")
 	private String subjectId;
 
+	@JsonProperty("subject_label")
+	private String subjectLabel;
+
 }

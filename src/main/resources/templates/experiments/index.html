@@ -30,7 +30,7 @@
 					<td th:text="${experiment.id}"></td>
 					<td th:text="${experiment.label}"></td>
 					<td th:text="${experiment.projectId}"></td>
-					<td th:text="${experiment.subjectId}"></td>
+					<td th:text="${experiment.subjectLabel}"></td>
 					<td th:text="${#temporals.format(experiment.date, 'dd/MM/yyyy')}"></td>
 					<td th:text="${#temporals.format(experiment.insertDate, 'dd/MM/yyyy HH:mm')}"></td>
 					<td th:with="selected=${#lists.contains(@galaxyContext.selectedUploadables, experiment)}">
