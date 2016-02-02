@@ -13,4 +13,6 @@ public interface Uploadable {
 	String getRef();
 
 	UploadableType getType();
+
+	String getFileName();
 }

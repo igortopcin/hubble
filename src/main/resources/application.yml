@@ -18,6 +18,9 @@ guava:
   cache:
     spec: expireAfterWrite=30m
 
+staging:
+  dir: /opt/staging
+
 ---
 
 spring:

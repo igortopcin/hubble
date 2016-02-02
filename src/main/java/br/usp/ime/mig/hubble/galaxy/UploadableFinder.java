@@ -1,4 +1,4 @@
-package br.usp.ime.mig.hubble.xnat.scan;
+package br.usp.ime.mig.hubble.galaxy;
 
 import java.util.Optional;
 

@@ -43,6 +43,36 @@ define(['domReady!', 'jquery', 'bootstrap'], function(doc, $) {
 	
 	bindEvents('.btn-send-item-to-galaxy');
 	
+	$('.btn-send-all-to-galaxy').click(function(event) {
+		var $button = $(this);
+		var $buttonIcon = $button.find('span.button-icon');
+		var $buttonText = $button.find('span.button-text');
+
+		$buttonIcon.addClass('glyphicon-refresh glyphicon-refresh-animate');
+		$buttonText.text('Processing');
+
+		$.ajax({
+			url: '/galaxy/send?',
+			type: 'POST',
+			contentType: 'application/json',
+			success: function(data) {
+				$buttonIcon.removeClass('glyphicon-refresh glyphicon-remove glyphicon-refresh-animate');
+				$buttonIcon.addClass('glyphicon-ok');
+				$button.removeClass('btn-error btn-primary');
+				$button.addClass('btn-success');
+				$totalSelected.text(data);
+				$buttonText.text('Sent');
+			},
+			error: function() {
+				$buttonIcon.removeClass('glyphicon-refresh glyphicon-ok glyphicon-refresh-animate');
+				$buttonIcon.addClass('glyphicon-remove');
+				$button.removeClass('btn-success btn-primary');
+				$button.addClass('btn-error');
+				$buttonText.text('Error! Try again');
+			}
+		});
+	});
+	
 	return {
 		bind: bindEvents
 	};
