@@ -23,9 +23,13 @@ public class GalaxyContextInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String galaxyUrl = request.getParameter("GALAXY_URL");
-
 		if (galaxyUrl != null) {
-			galaxyContext.setReturnUrl(galaxyUrl);
+			galaxyContext.setGalaxyURL(galaxyUrl);
+		}
+
+		String apiKey = request.getParameter("API_KEY");
+		if (apiKey != null) {
+			galaxyContext.setApiKey(apiKey);
 		}
 
 		return true;
