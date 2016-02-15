@@ -1,0 +1,31 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout">
+
+<head>
+<title>Login</title>
+</head>
+<body>
+	<div class="jumbotron" layout:fragment="content">
+		<p>Register by choosing a username and password:</p>
+		<form th:action="@{/signup}" th:object="${newUser}" method="post">
+			<div>
+				<label>Email: <input type="text" th:field="*{username}" />
+				</label>
+				<p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Invalid username placeholder message</p>
+			</div>
+			<div>
+				<label>Password: <input type="password" th:field="*{password}" />
+				</label>
+				<p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Invalid password placeholder message</p>
+			</div>
+			<div>
+				<input type="submit" value="Sign Up" />
+			</div>
+		</form>
+	</div>
+</body>
+</html>

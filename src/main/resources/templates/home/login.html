@@ -1,0 +1,39 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout">
+
+<head>
+<title>Login</title>
+</head>
+<body>
+	<div class="jumbotron" layout:fragment="content">
+		<p th:if="${param.error}">Invalid username and password.</p>
+		<p th:if="${param.logout}">You have been logged out.</p>
+		<form th:action="@{/login}" method="post">
+			<div>
+				<label>User Name: <input type="text" name="username" />
+				</label>
+			</div>
+			<div>
+				<label>Password: <input type="password" name="password" />
+				</label>
+			</div>
+			<div>
+				<input type="submit" value="Sign In" />
+			</div>
+		</form>
+		<form th:action="@{/login/openid}" method="post"
+			id="google-login-form">
+			<input name="openid_identifier" size="50" maxlength="100"
+				type="hidden" value="http://www.google.com/accounts/o8/id" />
+			<label class="fixed"><!-- intentionally left blank --></label>
+			<div class="input">
+				<input id="proceed-google" type="submit" value="Do it with Google" />
+			</div>
+		</form>
+	</div>
+</body>
+</html>

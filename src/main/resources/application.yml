@@ -3,6 +3,13 @@ spring:
     name: "Hubble Data Source Manager"
   profiles:
     active: development
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+security:
+  basic:
+    enabled: false
 
 server:
     port: 9000
@@ -34,6 +41,10 @@ spring:
     
   thymeleaf:
     cache: false
+
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 ---
 

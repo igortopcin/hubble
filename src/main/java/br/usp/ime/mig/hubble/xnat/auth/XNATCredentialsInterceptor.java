@@ -3,6 +3,8 @@ package br.usp.ime.mig.hubble.xnat.auth;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 @Component
+@Slf4j
 public class XNATCredentialsInterceptor extends HandlerInterceptorAdapter {
 
 	private final XNATCredentials credentials;
@@ -30,14 +33,15 @@ public class XNATCredentialsInterceptor extends HandlerInterceptorAdapter {
 		String user = request.getParameter("xnat_user");
 		String password = request.getParameter("xnat_password");
 
-		if (user == null && credentials.getUser() == null && !request.getRequestURI().endsWith("logged-out")) {
+		if (user == null && credentials.getUser() == null && !request.getRequestURI().endsWith("login")) {
+			log.error("Cannot find XNAT authentication parameters for user");
 			if (assertThatAcceptHeaderIsTextHttp(request, response)
 					|| assertThatResponseContentTypeIsTextHttp(response, handler)) {
-				response.sendRedirect("/logged-out");
+				// response.sendRedirect("/login");
 			} else {
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			}
-			return false;
+			return true;
 		} else if (user != null) {
 			credentials.setUser(user);
 			credentials.setPassword(password);
