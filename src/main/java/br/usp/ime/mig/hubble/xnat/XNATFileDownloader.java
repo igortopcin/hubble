@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.codec.binary.Base64;
 
+import br.usp.ime.mig.hubble.auth.ExternalCredential;
 import br.usp.ime.mig.hubble.downloader.FileDownloader;
 import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
-import br.usp.ime.mig.hubble.xnat.auth.XNATCredentials;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -33,9 +33,9 @@ public class XNATFileDownloader implements FileDownloader {
 	private final String user;
 	private final String password;
 
-	public XNATFileDownloader(String stagingDir, XNATCredentials credentials) {
+	public XNATFileDownloader(String stagingDir, ExternalCredential credentials) {
 		this.stagingDir = stagingDir;
-		user = credentials.getUser();
+		user = credentials.getUsername();
 		password = credentials.getPassword();
 	}
 

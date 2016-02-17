@@ -3,27 +3,96 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="layout"
+	th:with="module='app/profile'">
 
 <head>
-<title>Login</title>
+<title>Your Profile</title>
 </head>
 <body>
-	<div class="jumbotron" layout:fragment="content">
-		<p>Register by choosing a username and password:</p>
-		<form th:action="@{/signup}" th:object="${newUser}" method="post">
-			<div>
-				<label>Email: <input type="text" th:field="*{username}" />
-				</label>
-				<p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Invalid username placeholder message</p>
+	<div class="row marketing" layout:fragment="content">
+		<h4>Your Profile</h4>
+		<div th:if="${param.noGalaxyApiKey}" class="alert alert-danger" role="alert">
+			Please complete your profile with your <a href="#_galaxyApiKey" class="alert-link">Galaxy API Key</a>.
+		</div>
+		<div th:if="${param.noXnatCredentials}" class="alert alert-danger" role="alert">
+			Please complete your profile with your <a href="#_xnatCredentials" class="alert-link">XNAT credentials</a>.
+		</div>
+		<div th:if="${param.success}" class="alert alert-success" role="alert">
+			Your profile was updated.
+		</div>
+
+		<form th:action="@{/profile}" th:object="${user}" method="post">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Basic information</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group" th:classappend="${#fields.hasErrors('username')? 'has-error' : ''}">
+						<label th:for="${#ids.next('username')}">Email address</label>
+						<input th:readonly="true" type="email" class="form-control" placeholder="email@example.com" th:field="*{username}" />
+						<p th:if="${#fields.hasErrors('username')}" class="help-block" th:errors="*{username}">
+							Invalid username placeholder message
+						</p>
+					</div>
+					<div class="panel panel-info">
+						<div class="panel-heading">
+							<h5 class="panel-title">
+								<input type="checkbox" th:field="*{changingPassword}" id="change-password-checkbox" />
+									Change password
+							</h5>
+						</div>
+						<div class="panel-body" id="change-password-box" th:classappend="*{changingPassword ? '' : 'collapse'}">
+							<div class="form-group" th:classappend="${#fields.hasErrors('currentPassword')? 'has-error' : ''}">
+								<label for="password-input" th:for="${#ids.next('currentPassword')}">Current password</label>
+								<input type="password" class="form-control" th:field="*{currentPassword}" autocomplete="off" />
+								<p th:if="${#fields.hasErrors('currentPassword')}" class="help-block" th:errors="*{currentPassword}">
+									Invalid password placeholder message
+								</p>
+							</div>
+							<div class="form-group" th:classappend="${#fields.hasErrors('newPassword')? 'has-error' : ''}">
+								<label for="password-input" th:for="${#ids.next('newPassword')}">New password</label>
+								<input type="password" class="form-control" th:field="*{newPassword}" autocomplete="off" />
+								<p th:if="${#fields.hasErrors('newPassword')}" class="help-block" th:errors="*{newPassword}">
+									Invalid password placeholder message
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Galaxy and XNAT</h3>
+				</div>
+				<div class="panel-body">
+
+					<div id="_galaxyApiKey" class="form-group" th:classappend="${#fields.hasErrors('galaxyApiKey')? 'has-error' : ''}">
+						<label for="password-input" th:for="${#ids.next('galaxyApiKey')}">Galaxy API Key</label>
+						<input type="text" class="form-control" th:field="*{galaxyApiKey}" />
+						<p th:if="${#fields.hasErrors('galaxyApiKey')}" class="help-block" th:errors="*{galaxyApiKey}">
+							Invalid Galaxy API Key placeholder message
+						</p>
+					</div>
+					<div id="_xnatCredentials" class="form-group" th:classappend="${#fields.hasErrors('xnatUsername')? 'has-error' : ''}">
+						<label for="password-input" th:for="${#ids.next('xnatUsername')}">XNAT username</label>
+						<input type="text" class="form-control" th:field="*{xnatUsername}" />
+						<p th:if="${#fields.hasErrors('xnatUsername')}" class="help-block" th:errors="*{xnatUsername}">
+							Invalid XNAT Username placeholder message
+						</p>
+					</div>
+					<div class="form-group" th:classappend="${#fields.hasErrors('xnatPassword')? 'has-error' : ''}">
+						<label for="password-input" th:for="${#ids.next('xnatPassword')}">XNAT password</label>
+						<input type="password" class="form-control" name="xnatPassword" th:value="*{xnatPassword}" autocomplete="off" />
+						<p th:if="${#fields.hasErrors('xnatPassword')}" class="help-block" th:errors="*{xnatPassword}">
+							Invalid XNAT Password placeholder message
+						</p>
+					</div>
+				</div>
 			</div>
 			<div>
-				<label>Password: <input type="password" th:field="*{password}" />
-				</label>
-				<p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Invalid password placeholder message</p>
-			</div>
-			<div>
-				<input type="submit" value="Sign Up" />
+				<input type="submit" class="btn btn-default" value="Save Profile" />
 			</div>
 		</form>
 	</div>

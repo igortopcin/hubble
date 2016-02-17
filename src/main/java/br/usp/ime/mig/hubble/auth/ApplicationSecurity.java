@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
@@ -22,8 +23,11 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
 
-	public ApplicationSecurity(UserDetailsService userDetailsService) {
+	private final PasswordEncoder passwordEncoder;
+
+	public ApplicationSecurity(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
 		this.userDetailsService = userDetailsService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -56,7 +60,9 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService);
+	public void configure(AuthenticationManagerBuilder authenticationBuilder) throws Exception {
+		authenticationBuilder
+				.userDetailsService(userDetailsService)
+				.passwordEncoder(passwordEncoder);
 	}
 }

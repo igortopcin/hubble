@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import br.usp.ime.mig.hubble.auth.Users;
 import br.usp.ime.mig.hubble.galaxy.dataset.Uploadable;
 
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
@@ -21,9 +22,6 @@ public class GalaxyContext {
 
 	@Getter @Setter
 	private String galaxyURL;
-
-	@Getter @Setter
-	private String apiKey;
 
 	@Getter
 	private UploadStatus uploadStatus = new UploadStatus();
@@ -45,7 +43,7 @@ public class GalaxyContext {
 	}
 
 	public GalaxyInstance getGalaxyInstance() {
-		return GalaxyInstanceFactory.get(galaxyURL, apiKey);
+		return GalaxyInstanceFactory.get(galaxyURL, Users.getLoggedUser().get().getGalaxyApiKey());
 	}
 
 }

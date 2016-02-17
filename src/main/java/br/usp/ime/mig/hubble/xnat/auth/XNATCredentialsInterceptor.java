@@ -1,5 +1,9 @@
 package br.usp.ime.mig.hubble.xnat.auth;
 
+import static br.usp.ime.mig.hubble.auth.ExternalCredential.ExternalCredentialSource.XNAT;
+
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,36 +21,34 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import br.usp.ime.mig.hubble.auth.ExternalCredential;
+import br.usp.ime.mig.hubble.auth.User;
+import br.usp.ime.mig.hubble.auth.Users;
+
 @Component
 @Slf4j
 public class XNATCredentialsInterceptor extends HandlerInterceptorAdapter {
 
-	private final XNATCredentials credentials;
-
-	@Autowired
-	public XNATCredentialsInterceptor(XNATCredentials credentials) {
-		this.credentials = credentials;
-	}
-
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		String user = request.getParameter("xnat_user");
-		String password = request.getParameter("xnat_password");
-
-		if (user == null && credentials.getUser() == null && !request.getRequestURI().endsWith("login")) {
-			log.error("Cannot find XNAT authentication parameters for user");
+		Optional<User> userOptional = Users.getLoggedUser();
+		if (!userOptional.isPresent()) {
+			return true;
+		}
+		
+		Optional<ExternalCredential> credentials = userOptional.get().getExternalCredential(XNAT);
+		if (credentials.isPresent() || request.getRequestURI().endsWith("profile")) {
+			return true;
+		} else {
+			log.error("Cannot find XNAT credentials for user");
 			if (assertThatAcceptHeaderIsTextHttp(request, response)
 					|| assertThatResponseContentTypeIsTextHttp(response, handler)) {
-				// response.sendRedirect("/login");
+				response.sendRedirect("/profile?noXnatCredentials");
 			} else {
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			}
-			return true;
-		} else if (user != null) {
-			credentials.setUser(user);
-			credentials.setPassword(password);
+			return false;
 		}
-		return true;
 	}
 
 	private boolean assertThatResponseContentTypeIsTextHttp(HttpServletResponse response, Object handler) {
@@ -73,9 +75,6 @@ public class XNATCredentialsInterceptor extends HandlerInterceptorAdapter {
 
 	@Configuration
 	public static class Configurer extends WebMvcConfigurerAdapter {
-
-		@Autowired
-		private XNATCredentials credentials;
 
 		@Autowired
 		private XNATCredentialsInterceptor interceptor;

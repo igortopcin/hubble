@@ -1,6 +1,5 @@
 package br.usp.ime.mig.hubble.auth;
 
-import static br.usp.ime.mig.hubble.auth.ExternalCredential.ExternalCredentialSource.XNAT;
 import static javax.persistence.EnumType.STRING;
 
 import javax.persistence.Entity;
@@ -32,10 +31,18 @@ public class ExternalCredential {
 	private String password;
 
 	@Enumerated(STRING)
-	private ExternalCredentialSource source = XNAT;
+	private ExternalCredentialSource source;
 
 	@ManyToOne
 	private User user;
+
+	public ExternalCredential() {
+	}
+
+	public ExternalCredential(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
 
 	public enum ExternalCredentialSource {
 		XNAT
