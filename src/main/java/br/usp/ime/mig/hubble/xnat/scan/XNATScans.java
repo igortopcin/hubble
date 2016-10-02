@@ -72,7 +72,7 @@ public class XNATScans implements Scans, UploadableFinder {
 			scan.setExperiment(experiment.get());
 			return scan;
 		}).stream()
-				.filter(s -> "DICOM".equals(s.getFileType()))
+				.filter(s -> isSupportedFileType(s.getFileType()))
 				.collect(Collectors.toList());
 	}
 
@@ -93,12 +93,16 @@ public class XNATScans implements Scans, UploadableFinder {
 		}
 
 		return response.getResultSet().getResults().stream()
-				.filter(r -> scanRef.equals(r.getUri()) && "DICOM".equals(r.getLabel()))
+				.filter(r -> scanRef.equals(r.getUri()) && isSupportedFileType(r.getLabel()))
 				.map(r -> {
 					Scan s = CONVERTER.apply(r);
 					s.setExperiment(experiment.get());
 					return s;
 				}).findFirst();
+	}
+
+	private boolean isSupportedFileType(String type) {
+		return "DICOM".equals(type) || "NIFTI".equals(type);
 	}
 
 	@Override

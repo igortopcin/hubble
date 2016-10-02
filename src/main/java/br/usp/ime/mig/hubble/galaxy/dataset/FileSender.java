@@ -23,6 +23,7 @@ import com.sun.jersey.api.client.ClientResponse;
 public class FileSender {
 
 	private static final String DICOM_FILE_TYPE = "dcm.zip";
+	private static final String NIFTI_FILE_TYPE = "nii.gz";
 
 	private final GalaxyInstance galaxyInstance;
 
@@ -34,7 +35,7 @@ public class FileSender {
 	 * Send a file to Galaxy and hides it.
 	 * 
 	 * @param file
-	 *            The zip file to be sent.
+	 *            The file to be sent.
 	 * @param uploadable
 	 *            the {@link Uploadable} instance related to the file being
 	 *            sent.
@@ -81,8 +82,9 @@ public class FileSender {
 
 	private Optional<String> uploadFile(Path file, Uploadable uploadable, String historyId) {
 		FileUploadRequest request = new FileUploadRequest(historyId, file.toFile());
+		String fileType = guessFileType(file);
 		request.setDatasetName(generateDatasetName(uploadable));
-		request.setFileType(DICOM_FILE_TYPE);
+		request.setFileType(fileType);
 		ToolExecution exec = galaxyInstance.getToolsClient().upload(request);
 		
 		if (exec != null) {
@@ -92,6 +94,13 @@ public class FileSender {
 			}
 		}
 		return Optional.empty();
+	}
+
+	private String guessFileType(Path file) {
+		if (file.getFileName().toString().endsWith(NIFTI_FILE_TYPE)) {
+			return NIFTI_FILE_TYPE;
+		}
+		return DICOM_FILE_TYPE;
 	}
 
 	private String generateDatasetName(Uploadable uploadable) {

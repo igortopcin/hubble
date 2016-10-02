@@ -15,11 +15,13 @@ server:
     port: 9000
 
 galaxy:
+#  url: http://galaxy.migcloud.org
   url: http://localhost:8080
 
 xnat:
-  url: http://192.168.99.100:8080/xnat
-  timeoutInMillis: 1000
+  url: http://xnat.migcloud.org/xnat
+#  url: http://192.168.99.100:8080/xnat
+  timeoutInMillis: 2000
 
 guava:
   cache:
@@ -35,10 +37,10 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/hubble
-    username: hubble
-    password: hubble
+    username: <username>
+    password: <password>
     driver-class-name: org.postgresql.Driver
-    
+
   thymeleaf:
     cache: false
 
@@ -56,3 +58,10 @@ spring:
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
+galaxy:
+  url: http://galaxy.migcloud.org
+
+xnat:
+  url: http://xnat.migcloud.org/xnat
+  timeoutInMillis: 1000

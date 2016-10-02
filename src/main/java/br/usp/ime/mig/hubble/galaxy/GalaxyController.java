@@ -130,13 +130,15 @@ public class GalaxyController {
 					.forEach(u -> {
 						try {
 							URL url = urlResolvers.get(u.getType()).apply(u);
-							Path downloadedFile = downloader.download(url, u);
+							List<Path> downloadedFiles = downloader.download(url, u);
 
-							sender.send(downloadedFile, u, historyId)
-									.ifPresent(f -> {
-										sentFiles.add(f);
-										uploadStatus.getUploadables().remove(u);
-									});
+							downloadedFiles.forEach(downloadedFile -> {
+									sender.send(downloadedFile, u, historyId)
+											.ifPresent(f -> {
+												sentFiles.add(f);
+												uploadStatus.getUploadables().remove(u);
+											});
+							});
 						} catch (IOException e) {
 							log.error("Failed to upload {}", u, e);
 						}

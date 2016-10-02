@@ -20,7 +20,7 @@ public class ExperimentURLResolver implements UploadableURLResolver {
 
 	@Autowired
 	public ExperimentURLResolver(@Value("${xnat.url}") String xnatBaseUrl) {
-		this.downloadExperimentUrl = xnatBaseUrl + "{ref}/scans/ALL/files?format=zip&file_format=DICOM";
+		this.downloadExperimentUrl = xnatBaseUrl + "{ref}/scans/ALL/files?format=zip&file_format=DICOM&file_format=U";
 	}
 
 	@Override

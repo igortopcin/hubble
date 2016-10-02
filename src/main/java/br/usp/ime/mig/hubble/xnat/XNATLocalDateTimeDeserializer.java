@@ -3,6 +3,8 @@ package br.usp.ime.mig.hubble.xnat;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -17,7 +19,10 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 public class XNATLocalDateTimeDeserializer extends StdScalarDeserializer<LocalDateTime> {
 	private static final long serialVersionUID = 1L;
 
-	private final static DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+	private final static DateTimeFormatter DATETIME_FORMAT = new DateTimeFormatterBuilder()
+			.appendPattern("yyyy-MM-dd HH:mm:ss")
+			.parseLenient()
+			.appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true).toFormatter();
 
 	public XNATLocalDateTimeDeserializer() {
 		super(LocalDateTime.class);

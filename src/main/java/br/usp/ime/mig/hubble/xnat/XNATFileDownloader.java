@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +42,7 @@ public class XNATFileDownloader implements FileDownloader {
 	}
 
 	@Override
-	public Path download(URL url, Uploadable uploadable) throws IOException {
+	public List<Path> download(URL url, Uploadable uploadable) throws IOException {
 		Path file = Paths.get(this.stagingDir, DOWNLOADED_DIR, uploadable.getFileName() + ".zip");
 
 		if (Files.notExists(file)) {
@@ -59,13 +61,19 @@ public class XNATFileDownloader implements FileDownloader {
 		return repackage(uploadable);
 	}
 
-	private Path repackage(Uploadable uploadable) throws IOException {
+	private List<Path> repackage(Uploadable uploadable) throws IOException {
 		Path original = Paths.get(this.stagingDir, DOWNLOADED_DIR, uploadable.getFileName() + ".zip");
 		Path tempDir = createTempDirectory();
-		Path repackaged = Paths.get(tempDir.toString(), uploadable.getFileName() + ".zip");
+		Path repackagedDicom = Paths.get(tempDir.toString(), uploadable.getFileName() + ".dcm.zip");
 
-		copyFiles(original, repackaged, uploadable);
-		return repackaged;
+		List<Path> repackagedFiles = new ArrayList<>();
+		repackagedFiles.addAll(
+				copyNiftiFiles(original, tempDir, uploadable));
+
+		if (copyDicomFiles(original, repackagedDicom, uploadable)) {
+			repackagedFiles.add(repackagedDicom);
+		}
+		return repackagedFiles;
 	}
 
 	private Path createTempDirectory() throws IOException {
@@ -82,15 +90,20 @@ public class XNATFileDownloader implements FileDownloader {
 		return FileSystems.newFileSystem(uri, create ? ImmutableMap.of("create", "true") : Collections.emptyMap());
 	}
 
-	private static void copyFiles(Path source, Path destination, Uploadable uploadable) throws IOException {
-		log.info("Copying {} to {}", source, destination);
+	private static boolean copyDicomFiles(Path source, Path destination, Uploadable uploadable) throws IOException {
+		log.info("Copying DICOM files from {} to {}", source, destination);
+
+		if (!hasAnyDicomFiles(source)) {
+			return false;
+		}
+
 		try (
 				FileSystem sourceFS = createZipFileSystem(source, false);
 				FileSystem destinationFS = createZipFileSystem(destination, true)) {
 			Path destRoot = destinationFS.getPath("/");
 
 			Files.walk(sourceFS.getPath("/"))
-					.filter(src -> !Files.isDirectory(src))
+					.filter(src -> isDicomFile(src))
 					.forEach(src -> {
 						String scanLabel = src.getName(2).toString();
 						String filename = src.getFileName().toString();
@@ -112,5 +125,43 @@ public class XNATFileDownloader implements FileDownloader {
 						}
 					});
 		}
+		return true;
+	}
+
+	private static boolean hasAnyDicomFiles(Path source) throws IOException {
+		try (FileSystem sourceFS = createZipFileSystem(source, false)) {
+			return Files.walk(sourceFS.getPath("/")).anyMatch(src -> isDicomFile(src));
+		}
+	}
+
+	private static boolean isDicomFile(Path path) {
+		return !Files.isDirectory(path)
+				&& !path.getFileName().toString().endsWith(".gif")
+				&& !path.getFileName().toString().endsWith(".nii.gz");
+	}
+
+	private static List<Path> copyNiftiFiles(Path source, Path destinationRoot, Uploadable uploadable) throws IOException {
+		final List<Path> copiedFiles = new ArrayList<>();
+
+		log.info("Copying NIfTI files from {} to {}", source, destinationRoot);
+		try (FileSystem sourceFS = createZipFileSystem(source, false)) {
+			Files.walk(sourceFS.getPath("/"))
+					.filter(src -> isNiftiFile(src))
+					.forEach(src -> {
+						Path dest = Paths.get(destinationRoot.toString(), src.getFileName().toString());
+						log.debug("Copying file {} to {}", src, dest);
+						try {
+							Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+						} catch (Exception e) {
+							new RuntimeException(e);
+						}
+						copiedFiles.add(dest);
+					});
+		}
+		return copiedFiles;
+	}
+
+	private static boolean isNiftiFile(Path path) {
+		return !Files.isDirectory(path) && path.getFileName().toString().endsWith(".nii.gz");
 	}
 }
